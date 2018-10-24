@@ -1,0 +1,42 @@
+<!-- References:
+
+https://cal-heatmap.com/
+https://github.com/sallar/github-contributions-apis
+ -->
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
+<link rel="stylesheet" href="cal-heatmap.css" />
+<script type="text/javascript" src="cal-heatmap.min.js"></script>
+<style>
+.cal-heatmap-container
+.subdomain-text
+{
+	font-size: 17px;
+    fill: #e40e0e;
+	}
+</style>
+</head>
+<body>
+
+<div id="cal-heatmap"></div>
+<script type="text/javascript">
+	var cal = new CalHeatMap();
+	cal.init({
+	itemSelector: "#cal-heatmap",
+	start: new Date(2000, 0, 1, 1),
+	data: "datas-years.json",
+	domain: "month",
+	subDomain: "x_day",
+	cellSize: 20,
+	range: 1,
+	displayLegend: false,
+	subDomainTextFormat: function(date ,value) {
+		return "X";
+	}
+});
+</script>
+
+</body>
+</html>
