@@ -2,6 +2,16 @@
 
 https://cal-heatmap.com/
 https://github.com/sallar/github-contributions-apis
+https://stackoverflow.com/questions/8127035/how-to-create-a-diagonal-line-within-a-table-cell
+https://stackoverflow.com/questions/30376886/is-it-possible-to-cross-out-cells-in-an-html-table
+https://stackoverflow.com/questions/21968531/how-to-draw-a-checkmark-tick-using-css
+https://stackoverflow.com/questions/18920542/draw-an-x-in-css
+https://stackoverflow.com/questions/28042135/how-to-produce-x-mark-in-html?answertab=active#tab-top
+
+
+logo for app:
+
+https://www.flaticon.com/free-icon/calendar-with-check-mark_75624
  -->
 <!DOCTYPE html>
 <html>
@@ -9,33 +19,82 @@ https://github.com/sallar/github-contributions-apis
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js" charset="utf-8"></script>
 <link rel="stylesheet" href="cal-heatmap.css" />
 <script type="text/javascript" src="cal-heatmap.min.js"></script>
-<style>
-.cal-heatmap-container
-.subdomain-text
-{
-	font-size: 17px;
-    fill: #e40e0e;
-	}
-</style>
 </head>
 <body>
 
 <div id="cal-heatmap"></div>
 <script type="text/javascript">
+
+	// generate random data
+	function getRandomInt(min, max) {
+			return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+
+
+	function generateRandomData() {
+		var date = new Date();
+
+		var mind = date.valueOf();
+		var maxd = date.setMonth(date.getMonth() - 11);
+
+		var mins = 0;
+		var maxs = 40;
+
+		var retobj = {};
+
+		for (var i = 0; i < 100; i++) {
+			retobj[getRandomInt(mind, maxd) / 1000] = getRandomInt(mins, maxs);
+		}
+
+		return retobj;
+	}
+
+	function data_converter(data) {
+		var results = {}
+		for (let i = 0; i < data.length; i += 1) {
+			console.log(data[i]['date'])
+			results[Date.parse(data[i]['date'])] = parseInt(data[i]['count'])
+		}
+		console.log(results);
+		return results;
+	}
+
+	var parserData = function (data) {
+	var dataJSON = {};
+		for(var i=0; i<data.length; i++) { var date=new Date(data[i].date); // Date of activity
+			var sec=date.getTime()/1000; //Convert to sec
+			// Pair "Key-Value" for calendar data
+			if(dataJSON[sec]) {
+				dataJSON[sec]++;
+			}
+			else {
+				dataJSON[sec]= parseInt(data[i]['count']);
+			}
+		}
+	return dataJSON;
+	}
+
+	var data = generateRandomData();
+
 	var cal = new CalHeatMap();
 	cal.init({
 	itemSelector: "#cal-heatmap",
-	start: new Date(2000, 0, 1, 1),
-	data: "datas-years.json",
+	start: new Date(2018, 0, 1, 1),
+	data: data,
 	domain: "month",
 	subDomain: "x_day",
 	cellSize: 20,
-	range: 1,
+	range: 3,
+	scale: [2, 6, 10, 20],
 	displayLegend: false,
-	subDomainTextFormat: function(date ,value) {
-		return "X";
-	}
+	subDomainTextFormat: "%d",
+	cellLabel: {
+			empty: "No data on {date}",
+			filled: "{count} {name} {connector} {date}"
+		}
 });
+
+
 </script>
 
 </body>

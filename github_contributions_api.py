@@ -1,5 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
+import flask
+from flask import request, jsonify
+
+app = flask.Flask(__name__)
+app.config["DEBUG"] = True
+
+URL = 'https://github.com/users/{}/contributions'
+
+
+@app.route('/api/<string:username>', methods=['GET'])
+def get_data(username):
+    res = requests.get(URL.format(username))
+    soup = BeautifulSoup(res.text, features="html5lib")
+    github_contri_data = get_yearly_contribution_daywise(soup)
+    return jsonify(github_contri_data)
 
 
 def get_yearly_contribution_daywise(soup):
@@ -20,8 +35,7 @@ def overall_yearly_contributions(soup):
     overall_number = overall_contributions_tag.h2.get_text()
     return overall_number.strip().split(' ')[0]
 
-
-if __name__ == '__main__':
+def main():
     res = requests.get(
         'https://github.com/users/nipunsadvilkar/contributions?from=2016-12-28&to=2016-12-29'
     )
@@ -29,3 +43,7 @@ if __name__ == '__main__':
     yearly_contribution_daywise = get_yearly_contribution_daywise(soup)
     overall_count = overall_yearly_contributions(soup)
     print("Daywise yearly contributions: {}, overall count {}".format(len(yearly_contribution_daywise), overall_count))
+
+if __name__ == '__main__':
+    # main()
+    app.run()
